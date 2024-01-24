@@ -32,6 +32,7 @@ async function generatePix(req, res) {
             "expiracao": 30,
             "versaoCallback": "1",
             "vencimento": dataVencimento,
+            "informacoesGerador": JSON.stringify({ nome: 'Nome do gerador', email: 'Email do gerador' })
         }
 
         const response = await api.post('/transacao/gerar-qr-code-pdv', data, {
