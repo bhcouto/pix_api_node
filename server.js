@@ -19,7 +19,7 @@ app.get('/simular', simulatePay);
 async function generatePix(req, res) {
     try {
         let token = await acess();
-        const { valor } = req.body;
+        const { valor, expiracao, cnpj, slug } = req.body;
 
         const dataVencimento = currentDate();
         const uuid = generateUUIDv4();
@@ -29,10 +29,9 @@ async function generatePix(req, res) {
             valor,
             "chavePix": `${process.env.ID_KEY}`,
             "conta": `${process.env.ID_ACCOUNT}`,
-            "expiracao": 30,
+            "expiracao": expiracao || 40,
             "versaoCallback": "1",
-            "vencimento": dataVencimento,
-            "informacoesGerador": JSON.stringify({ nome: 'Nome do gerador', email: 'Email do gerador' })
+            "informacoesGerador": JSON.stringify({CNPJ: cnpj , Empresa: slug})
         }
 
         const response = await api.post('/transacao/gerar-qr-code-pdv', data, {
