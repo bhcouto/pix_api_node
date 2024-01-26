@@ -15,7 +15,8 @@ app.post('/gerar-pix', generatePix);
 app.get('/', response);
 app.get('/confirm', statusPix);
 app.get('/simular', simulatePay);
-app.get('/consultar', consultPay )
+app.get('/consultar/:id', consultPay);
+app.get('/consultar', consultPay);
 
 async function generatePix(req, res) {
     try {
@@ -108,8 +109,6 @@ async function simulatePay(req, res) {
             return res.status(500).json({ mensagem: 'Nenhum pagamento Pix foi gerado.' });
         }
 
-
-
     } catch (error) {
         console.error('Erro ao simular pagamento:', error);
         return res.status(500).json({ mensagem: 'Erro interno ao simular pagamento.' });
@@ -118,27 +117,38 @@ async function simulatePay(req, res) {
 
 async function consultPay(req, res) {
     try {
-
         let token = await acess();
-        const { dataInicio, dataFim, quantidade } = req.query
+        
+        if (req.params.id) {
+           
+            const response = await api.get(`transacao/${process.env.ID_ACCOUNT}/${req.params.id}`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+            return res.status(200).json(response.data);
+        } else {
+        
+            const { dataInicio, dataFim, quantidade } = req.query;
 
-        const response = await api.get(`transacao/${process.env.ID_ACCOUNT}/ultimas`, {
-            headers: {
-                'Authorization': `Bearer ${token}`
-            },
-            params: {
-                "data-inicial": dataInicio,
-                "data-final": dataFim,
-                "quantidade": quantidade
-
-            }
-        })
-        return res.status(200).json(response.data)
+            const response = await api.get(`transacao/${process.env.ID_ACCOUNT}/ultimas`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                },
+                params: {
+                    "data-inicial": dataInicio,
+                    "data-final": dataFim,
+                    "quantidade": quantidade || 10 
+                }
+            });
+            return res.status(200).json(response.data);
+        }
     } catch (error) {
-        console.error(error)
-        return res.status(500).json({ mensagem: 'Erro ao realizar consulta.' })
+        console.error(error);
+        return res.status(500).json({ mensagem: 'Erro ao realizar consulta.' });
     }
 }
+
 
 async function acess() {
 
