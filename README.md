@@ -94,6 +94,39 @@ Respostas
 
 ```
 
+__Endpoint__
 
-    
+GET: /consultar
+```
+ params: {
+             "data-inicial": dataInicio,
+             "data-final": dataFim,
+             "quantidade": quantidade || 10 
+         }
+```
+Resposta:
+
+Retorna uma lista de transações baseado nos params que foi passado, se não passar nenhum parâmetro, retornará as 10 últimas.
+```
+[
+    {
+        "id": "2db3506f-a763-4073-82d9-dd9eb8cdbf67",
+        "valor": 1.54,
+        "dataHora": "2024-01-26T11:08:12.820723-03:00",
+        "pix": "string",
+        "nome": "Pessoa Juridica",
+        "documento": "07.***.***/****-69",
+        "pdv": null,
+        "funcionario": null
+    },
+    {... outras transações}
+]
+```
+__Endpoint__
+
+GET: /consultar/:id
+
+Resposta:
+
+Retorna a mesma resposta da rota /confirm, porém aqui pode ser consultado a hora que quiser, e a transação que quiser através do ID.
 
