@@ -16,3 +16,15 @@ export function currentDate() {
 
     return data
 }
+
+export function apiResponseError(error, code, mensagem) {
+    if (error.response) {
+        console.log(error.response.status);
+        console.log(error.response.data);
+        error.message = error.response.data.message ?? error.message;
+
+    } else {
+        console.log(error)
+        return res.status(code).json({message: mensagem})
+    }
+}

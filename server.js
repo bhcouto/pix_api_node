@@ -15,6 +15,7 @@ app.post('/gerar-pix', generatePix);
 app.get('/', response);
 app.get('/confirm', statusPix);
 app.get('/simular', simulatePay);
+app.get('/consultar', consultPay )
 
 async function generatePix(req, res) {
     try {
@@ -31,7 +32,12 @@ async function generatePix(req, res) {
             "conta": `${process.env.ID_ACCOUNT}`,
             "expiracao": expiracao || 40,
             "versaoCallback": "1",
-            "informacoesGerador": JSON.stringify({CNPJ: cnpj , Empresa: slug})
+            "informacoesGerador": JSON.stringify(
+                {
+                    CNPJ: cnpj,
+                    EMPRESA: slug
+                }
+            )
         }
 
         const response = await api.post('/transacao/gerar-qr-code-pdv', data, {
@@ -110,7 +116,29 @@ async function simulatePay(req, res) {
     }
 }
 
+async function consultPay(req, res) {
+    try {
 
+        let token = await acess();
+        const { dataInicio, dataFim, quantidade } = req.query
+
+        const response = await api.get(`transacao/${process.env.ID_ACCOUNT}/ultimas`, {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            },
+            params: {
+                "data-inicial": dataInicio,
+                "data-final": dataFim,
+                "quantidade": quantidade
+
+            }
+        })
+        return res.status(200).json(response.data)
+    } catch (error) {
+        console.error(error)
+        return res.status(500).json({ mensagem: 'Erro ao realizar consulta.' })
+    }
+}
 
 async function acess() {
 
